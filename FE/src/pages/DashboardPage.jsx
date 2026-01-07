@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Row, Col, Statistic, Switch, message, Spin, Divider, Tag } from 'antd';
 import { 
-  FireOutlined, CloudOutlined, BulbOutlined, ExperimentOutlined, 
-  ThunderboltOutlined, GiftOutlined, CheckCircleOutlined, DisconnectOutlined
+  FireOutlined, CloudOutlined, BulbOutlined, ExperimentOutlined, GatewayOutlined,
+  ThunderboltOutlined, CheckCircleOutlined, DisconnectOutlined
 } from '@ant-design/icons';
 import SensorService from '../services/sensor.service';
 import socket from '../services/socket.service';
@@ -17,7 +17,7 @@ const DashboardPage = () => {
   });
 
   const [devices, setDevices] = useState({
-    fan: false, pump: false, led: false, feeder: false
+    fan: false, pump: false, led: false, door: false
   });
 
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ const DashboardPage = () => {
         SensorService.getLatestData('cam_bien_nhiet_do', 'temperature'),
         SensorService.getLatestData('cam_bien_do_am', 'humidity'),
         SensorService.getLatestData('cam_bien_anh_sang', 'light'),
-        SensorService.getLatestData('CO2', 'co2') 
+        SensorService.getLatestData('air_quality', 'co2') 
       ]);
 
       const getApiVal = (res) => (res.status === 'fulfilled' && res.value) ? parseValue(res.value) : 0;
@@ -62,7 +62,7 @@ const DashboardPage = () => {
            if (d.name === 'quat') newDevs.fan = d.value === 1;
            if (d.name === 'may_bom') newDevs.pump = d.value === 1;
            if (d.name === 'den_led') newDevs.led = d.value === 1;
-           if (d.name === 'cung_cap_thuc_an') newDevs.feeder = d.value === 1;
+           if (d.name === 'cua') newDevs.door = d.value === 1;
         });
         setDevices(newDevs);
       }
@@ -111,7 +111,7 @@ const DashboardPage = () => {
     socket.on('fan', (data) => setDevices(prev => ({ ...prev, fan: parseValue(data) === 1 })));
     socket.on('pump', (data) => setDevices(prev => ({ ...prev, pump: parseValue(data) === 1 })));
     socket.on('led', (data) => setDevices(prev => ({ ...prev, led: parseValue(data) === 1 })));
-    socket.on('feeder', (data) => setDevices(prev => ({ ...prev, feeder: parseValue(data) === 1 })));
+    socket.on('door', (data) => setDevices(prev => ({ ...prev, door: parseValue(data) === 1 })));
 
     // Cleanup
     return () => {
@@ -125,7 +125,7 @@ const DashboardPage = () => {
       socket.off('fan');
       socket.off('pump');
       socket.off('led');
-      socket.off('feeder');
+      socket.off('door');
     };
   }, []);
 
@@ -225,10 +225,10 @@ const DashboardPage = () => {
 
         {/* Máy Cho Ăn */}
         <Col xs={24} sm={12} lg={6}>
-          <Card hoverable title="Máy Cho Ăn" extra={<GiftOutlined />}>
+          <Card hoverable title="Hệ thống Cửa" extra={<GatewayOutlined />}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>{devices.feeder ? <Tag color="purple">ĐANG MỞ</Tag> : <Tag color="default">ĐÃ ĐÓNG</Tag>}</span>
-              <Switch checked={devices.feeder} onChange={() => handleToggleDevice('cung_cap_thuc_an', 'feeder', devices.feeder)} style={{background: devices.feeder ? '#722ed1' : undefined}} />
+              <span>{devices.door ? <Tag color="purple">ĐANG MỞ</Tag> : <Tag color="default">ĐÃ ĐÓNG</Tag>}</span>
+              <Switch checked={devices.door} onChange={() => handleToggleDevice('cua', 'door', devices.door)} style={{background: devices.door ? '#722ed1' : undefined}} />
             </div>
           </Card>
         </Col>

@@ -5,10 +5,10 @@ import {
   ThunderboltOutlined, 
   CloudOutlined, 
   BulbOutlined, 
-  GiftOutlined,
   AppstoreOutlined,
   CheckCircleOutlined,
-  DisconnectOutlined
+  DisconnectOutlined,
+  GatewayOutlined
 } from '@ant-design/icons';
 import SensorService from '../services/sensor.service';
 import socket from '../services/socket.service';
@@ -23,8 +23,7 @@ const DevicePage = () => {
     'quat': { label: 'Hệ thống Quạt', type: 'fan', icon: <ThunderboltOutlined />, color: 'green' },
     'may_bom': { label: 'Máy Bơm', type: 'pump', icon: <CloudOutlined />, color: 'blue' },
     'den_led': { label: 'Đèn LED', type: 'led', icon: <BulbOutlined />, color: 'gold' },
-    // Feeder không có trong bảng API Guide mới, nhưng giữ lại để tương thích code cũ nếu cần
-    'cung_cap_thuc_an': { label: 'Máy Cho Ăn', type: 'feeder', icon: <GiftOutlined />, color: 'purple' },
+    'cung_cap_thuc_an': { label: 'Cửa (Servo)', type: 'door', icon: <GatewayOutlined />, color: 'purple' },
   };
 
   // 1. Hàm lấy danh sách thiết bị từ api (HTTP)
@@ -81,7 +80,7 @@ const DevicePage = () => {
     socket.on('led', handleSocketUpdate);
     socket.on('fan', handleSocketUpdate);
     socket.on('pump', handleSocketUpdate);
-    socket.on('feeder', handleSocketUpdate); // Dự phòng cho máy cho ăn
+    socket.on('door', handleSocketUpdate); // Dự phòng cho máy cho ăn
 
     return () => {
       socket.off('connect');
@@ -89,7 +88,7 @@ const DevicePage = () => {
       socket.off('led');
       socket.off('fan');
       socket.off('pump');
-      socket.off('feeder');
+      socket.off('door');
     };
   }, []);
 
